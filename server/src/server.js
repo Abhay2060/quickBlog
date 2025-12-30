@@ -5,4 +5,8 @@ dotenv.config()
 
 const PORT = process.env.PORT||5000;
 connectDB();
-app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
+app.get("/", (req, res) => {
+  res.send("Backend is running on Vercel");
+});
+
+export default app
