@@ -33,9 +33,9 @@ export const register = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true in production
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: true, 
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(201).json({
@@ -66,8 +66,8 @@ export const adminLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -88,54 +88,6 @@ export const adminLogin = async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie("token");
   res.json({ success: true, message: "Logged out" });
-};
-
-export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-
-  if (!user) return res.status(404).json({ message: "User not found" });
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit OTP
-
-  user.otp = otp;
-  user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
-
-  await user.save();
-
-  // Later we will email OTP — now send in response for testing
-  res.json({
-    message: "OTP sent to your email",
-    otp // remove this when adding mail
-  });
-};
-
-export const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
-
-  const user = await User.findOne({ email });
-
-  if (!user) return res.status(404).json({ message: "User not found" });
-
-  if (user.otp !== otp) {
-    return res.status(400).json({ message: "Invalid OTP" });
-  }
-
-  if (user.otpExpires < Date.now()) {
-    return res.status(400).json({ message: "OTP expired" });
-  }
-
-  const hashed = await bcrypt.hash(newPassword, 10);
-  user.password = hashed;
-
-  // clear OTP fields
-  user.otp = undefined;
-  user.otpExpires = undefined;
-
-  await user.save();
-
-  res.json({ message: "Password reset successful" });
 };
 
 export const getAllBlogsAdmin = async(req, res) =>{

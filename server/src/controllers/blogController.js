@@ -12,7 +12,7 @@ export const addBlog = async (req, res)=>{
         const {title, subTitle, description, category, isPublished} = JSON.parse(req.body.blog);
         const imageFile = req.file;
 
-        //check if all fileds are present
+        
         if(!title || !description || !category || !imageFile ){
             return res.json({success: false, message: "Missing required fileds"})
         }
