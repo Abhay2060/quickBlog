@@ -14,6 +14,9 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is running successfully!" });
+});
 
 app.use('/admin',userRoutes);
 app.use('/blog',blogRouter)
