@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Backend is running successfully!" });
+  res.json("Api is Working");
 });
 
 app.use('/admin',userRoutes);
