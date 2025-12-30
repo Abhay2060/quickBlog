@@ -8,7 +8,7 @@ import blogRouter from './routes/blogRoutes.js';
 const app = express();
 
 app.use(cors({
-  origin: "https://quick-blog-client-chi-six.vercel.app/",   // explicitly allow your frontend
+  origin: "https://quick-blog-client-chi-six.vercel.app",   // explicitly allow your frontend
   credentials: true                  // allow cookies/headers
 }));
 app.use(cookieParser());
