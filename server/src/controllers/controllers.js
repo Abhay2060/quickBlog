@@ -1,8 +1,8 @@
-import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Blog from "../models/Blog.js";
 import Comment from "../models/Comment.js";
+import User from "../models/user.js";
 
 const generateAccessToken = (user) => {
   return jwt.sign(
@@ -48,6 +48,7 @@ export const register = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("REGISTER ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -66,8 +67,8 @@ export const adminLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: false,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -92,7 +93,8 @@ export const logout = (req, res) => {
 
 export const getAllBlogsAdmin = async(req, res) =>{
   try {
-    const blogs = await Blog.find({}).sort({createdAt: -1});
+    const userId = req.user.id;
+    const blogs = await Blog.find({user: userId}).populate("user").sort({createdAt: -1});
     res.json({success: true, blogs})
   } catch (error){
     res.json({success: false, message: error.message})
@@ -110,7 +112,8 @@ export const getAllComments = async (req, res) =>{
 
 export const getDashboard = async (req, res) =>{
   try{
-      const recentBlogs = await Blog.find({}).sort({createdAt:-1}).limit(5);
+      const userId = req.user.id;
+      const recentBlogs = await Blog.find({user: userId}).populate("user").sort({createdAt:-1}).limit(5);
       const blogs = await Blog.countDocuments();
       const comments = await Comment.countDocuments();
       const drafts = await Blog.countDocuments({isPublished: false})

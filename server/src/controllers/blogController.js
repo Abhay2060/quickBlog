@@ -1,4 +1,4 @@
-import User from "../models/Blog.js";
+import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cloudinary from "../utils/cloudinary.js";
@@ -11,6 +11,7 @@ export const addBlog = async (req, res)=>{
     try{
         const {title, subTitle, description, category, isPublished} = JSON.parse(req.body.blog);
         const imageFile = req.file;
+        const user = req.user.id;
 
         
         if(!title || !description || !category || !imageFile ){
@@ -34,11 +35,12 @@ export const addBlog = async (req, res)=>{
 
         const image = result.secure_url;
 
-        await Blog.create({title, subTitle, description, category, image, isPublished})
+        await Blog.create({user,title, subTitle, description, category, image, isPublished})
 
         res.json({success: true, message: "Blog added successfully"})
     } catch(error){
-        res.json({success: false, message: "Blog added successfully"})
+        console.error(error)
+        res.json({ success: false, message: "Failed to add blog" });
 
     }
 }
